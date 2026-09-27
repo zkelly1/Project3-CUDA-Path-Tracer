@@ -60,6 +60,7 @@ set(headers
 )
 
 set(sources
+    src/mesh.cpp
     src/main.cpp
     src/stb.cpp
     src/image.cpp
@@ -144,4 +145,15 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     VS_DEBUGGER_COMMAND_ARGUMENTS "\"${CMAKE_SOURCE_DIR}/scenes/cornell.json\""
 )
+
+
+option(BUILD_PATHTRACE_CHECKS "Build diffuse path tracing checks" OFF)
+if(BUILD_PATHTRACE_CHECKS)
+    add_executable(pathtrace_checks tests/pathtrace_checks.cu
+        src/pathtrace.cu src/interactions.cu src/intersections.cu src/scene.cpp src/mesh.cpp src/utilities.cpp)
+    set_target_properties(pathtrace_checks PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON CUDA_ARCHITECTURES native)
+    get_target_property(renderer_options ${CMAKE_PROJECT_NAME} COMPILE_OPTIONS)
+    target_compile_options(pathtrace_checks PRIVATE ${renderer_options})
+endif()
 
